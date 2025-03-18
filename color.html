@@ -1,0 +1,122 @@
+   <!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>color</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #canvas {
+            border: 1px solid black;
+            cursor: crosshair;
+            touch-action: none; /* Απενεργοποιούμε το scroll για οθόνες αφής */
+        }
+        .color-palette {
+            margin-top: 20px;
+        }
+        .color-palette div {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+            margin: 5px;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+        #clearButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Εφαρμογή Ζωγραφικής</h1>
+
+    <canvas id="canvas" width="600" height="400"></canvas>
+
+    <div class="color-palette">
+        <div id="red" style="background-color: red;"></div>
+        <div id="green" style="background-color: green;"></div>
+        <div id="blue" style="background-color: blue;"></div>
+        <div id="yellow" style="background-color: yellow;"></div>
+        <div id="black" style="background-color: black;"></div>
+        <div id="white" style="background-color: white;"></div>
+    </div>
+
+    <button id="clearButton">Καθαρισμός Καμβά</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+        let color = 'black';
+
+        // Ξεκινάμε το σχέδιο όταν πατήσουμε το ποντίκι ή το δάχτυλο
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('touchstart', startPosition);
+
+        // Σταματάμε το σχέδιο όταν αφήσουμε το ποντίκι ή το δάχτυλο
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('touchend', endPosition);
+
+        // Σχεδιάζουμε όσο κρατάμε το ποντίκι ή το δάχτυλο
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('touchmove', draw);
+
+        // Επιλογή χρώματος
+        document.getElementById('red').addEventListener('click', () => color = 'red');
+        document.getElementById('green').addEventListener('click', () => color = 'green');
+        document.getElementById('blue').addEventListener('click', () => color = 'blue');
+        document.getElementById('yellow').addEventListener('click', () => color = 'yellow');
+        document.getElementById('black').addEventListener('click', () => color = 'black');
+        document.getElementById('white').addEventListener('click', () => color = 'white');
+
+        // Λειτουργία για καθαρισμό του καμβά
+        document.getElementById('clearButton').addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+
+        // Αρχή σχεδίασης
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+            e.preventDefault(); // Αποτρέπουμε το scroll
+        }
+
+        // Τερματισμός σχεδίασης
+        function endPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+
+        // Σχεδίαση
+        function draw(e) {
+            if (!painting) return;
+
+            // Για κινητό (touch) και υπολογιστή (mouse)
+            const x = e.type.includes('mouse') ? e.offsetX : e.touches[0].clientX - canvas.offsetLeft;
+            const y = e.type.includes('mouse') ? e.offsetY : e.touches[0].clientY - canvas.offsetTop;
+
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = color;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        // Αποτρέπει το scroll στην οθόνη κατά την κίνηση του ποντικιού ή του δακτύλου
+        window.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+
+</body>
+</html>
